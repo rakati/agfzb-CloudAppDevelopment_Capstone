@@ -15,23 +15,35 @@ logger = logging.getLogger(__name__)
 
 
 # Create your views here.
-
-
-# Create an `about` view to render a static about page
 def about(request):
+    '''render about page'''
     context = {}
     if request.method == "GET":
         return render(request, 'djangoapp/about.html', context)
 
-# Create a `contact` view to return a static contact page
 def contact(request):
+    '''render contact page'''
     context = {}
     if request.method == 'GET':
         return render(request, 'djangoapp/contact.html', context)
 
-# Create a `login_request` view to handle sign in request
-# def login_request(request):
-# ...
+def login_request(request):
+    '''Handle user login'''
+    context = {}
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['psw']
+        # Try to check if provide credential can be authenticated
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            # If user is valid, call login method to login current user
+            login(request, user)
+            return redirect(request.path)
+        else:
+            # If not, return to login page again
+            return render(request, 'djangoapp/index.html', context)
+    else:
+        return render(request, 'djangoapp/index.html', context)
 
 # Create a `logout_request` view to handle sign out request
 # def logout_request(request):
