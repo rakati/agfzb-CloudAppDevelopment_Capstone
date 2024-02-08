@@ -72,8 +72,8 @@ def registration_request(request):
         if not user_exist:
             # Create user in auth_user table
             user = User.objects.create_user(username=username,
-                                            first_name=first_name,
-                                            last_name=last_name,
+                                            first_name=firstname,
+                                            last_name=lastname,
                                             password=password
                                             )
             login(request, user)
