@@ -142,3 +142,6 @@ server/djangoapp/migrations/
 
 # ignore sqlite db 
 db.sqlite3
+
+# ignore node modules
+node_modules/
