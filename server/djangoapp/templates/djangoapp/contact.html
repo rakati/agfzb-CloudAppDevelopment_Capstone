@@ -1,47 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dealership Review</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <link href="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
-
-</head>
-
-    <body>
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="{% url 'djangoapp:index' %}"><b>Best Cars</b></a>
-                    <a class="navbar-brand" href="{% url 'djangoapp:about' %}">About Us</a>
-                    <a class="navbar-brand" href="{% url 'djangoapp:contact' %}">Contact Us</a>
-                </div>
-            </div>
-        </nav>
-    <br>
-    <br>
-    <div class="container">
-        <div class="text-center">
-            <ul class="list-unstyled mb-0">
-                <li><i class="fas fa-map-marker-alt fa-2x"></i>
-                    <p>San Francisco, CA 54321, USA</p>
-                </li>
-
-                <li><i class="fas fa-phone mt-4 fa-2x"></i>
-                    <p>+ 01 234 567 89</p>
-                </li>
-
-                <li><i class="fas fa-envelope mt-4 fa-2x"></i>
-                    <p>contact-us@bestcars.com</p>
-                </li>
-            </ul>
-        </div>
-    </div>
-    </body>
-
-</html>
+{% extends "djangoapp/base.html" %}
+{% block content %}
+<div class="text-center">
+    <ul class="list-unstyled mb-0">
+        <li><i class="fas fa-map-marker-alt fa-2x"></i>
+            <p>San Francisco, CA 54321, USA</p>
+        </li>
+        <li><i class="fas fa-phone mt-4 fa-2x"></i>
+            <p>+ 01 234 567 89</p>
+        </li>
+        <li><i class="fas fa-envelope mt-4 fa-2x"></i>
+            <p>contact-us@bestcars.com</p>
+        </li>
+    </ul>
+</div>
+{% endblock %}
