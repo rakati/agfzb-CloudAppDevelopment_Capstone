@@ -28,17 +28,18 @@ def get_request(url, auth, **kwargs):
         print("Failed to parse JSON response")
         return None
 
-def post_request(url, auth, json_data):
+def post_request(url, auth, json_payload, **kwargs):
     '''A function that request data from a remote api using post method'''
-    print("GET from {} with data: {}".format(url, json_data))
+    print("GET from {} with data: {}".format(url, json_payload))
     headers={'Content-Type': 'application/json'}
     try:
         # Call get method of requests library with URL and parameters
         if auth:
-            response = requests.post(url, json=json_data, headers=headers,
-                         auth=HTTPBasicAuth('apikey', auth))
+            response = requests.post(url, json=json_payload, headers=headers,
+                         auth=HTTPBasicAuth('apikey', auth), params=kwargs)
         else:
-            response = requests.post(url, json=json_data, headers=headers)
+            response = requests.post(url, json=json_payload, headers=headers,
+                                     params=kwargs)
     except:
         # If any error occurs
         print("Network exception occurred")
@@ -57,6 +58,7 @@ def post_request(url, auth, json_data):
 
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
+
 
 def get_dealers_from_cf(url, **kwargs):
     '''
