@@ -107,7 +107,7 @@ def get_dealer_details(request, dealer_id):
         # Get dealer reviews from the URL
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
         context['dealer_id'] = dealer_id
-        context['reviews']= [str(review) for review in reviews]
+        context['reviews']= [{'review': str(review), "sentiment": review.sentiment} for review in reviews]
         return HttpResponse(json.dumps(context, indent=4), content_type='application/json')
 
 # Create a `add_review` view to submit a review
