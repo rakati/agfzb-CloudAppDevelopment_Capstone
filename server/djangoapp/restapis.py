@@ -21,12 +21,16 @@ def get_request(url, auth, **kwargs):
         print("Network exception occurred")
     status_code = response.status_code
     print("With status {} ".format(status_code))
-    json_data = json.loads(response.text)
-    return json_data
+    try:
+        json_data = json.loads(response.text)
+        return json_data
+    except json.JSONDecodeError:
+        print("Failed to parse JSON response")
+        return None
 
-def post_request(url, auth, data):
+def post_request(url, auth, json_data):
     '''A function that request data from a remote api using post method'''
-    print("GET from {} with data: {}".format(url, data))
+    print("GET from {} with data: {}".format(url, json_data))
     headers={'Content-Type': 'application/json'}
     try:
         # Call get method of requests library with URL and parameters
@@ -41,9 +45,15 @@ def post_request(url, auth, data):
         return None
     status_code = response.status_code
     print("With status {} ".format(status_code))
-    json_resp = json.loads(response.text)
-    print("Post json data:", json.dumps(json_resp, indent=4))
-    return json_resp
+    if status_code != 200:
+        return None
+    try:
+        json_response = response.json()
+        print("Post json data:", json.dumps(json_response, indent=4))
+        return json_response
+    except json.JSONDecodeError:
+        print("Failed to parse JSON response")
+        return None
 
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
@@ -133,7 +143,7 @@ def get_dealer_reviews_from_cf(url, dealer_id):
                                    car_model=review_doc.get("car_model", None),
                                    car_year=review_doc.get("car_year", None),
                                    sentiment=None)
-            sentiment=analyze_review_sentiments(review_obj.review)
+            review_obj.sentiment=analyze_review_sentiments(review_obj.review)
             results.append(review_obj)
         print("res:", results)
     return results
@@ -141,6 +151,7 @@ def get_dealer_reviews_from_cf(url, dealer_id):
 # Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
 def analyze_review_sentiments(dealerreview):
     '''get sentiments of a dealer review'''
+    print("text to analyze:", dealerreview)
     api_key = os.environ["NLU_KEY"]
     api_url = os.environ["NLU_URL"] + "/v1/analyze?version=2019-07-12"
     data = {
@@ -153,20 +164,3 @@ def analyze_review_sentiments(dealerreview):
     if json_resp is None:
         return None
     return json_resp["sentiment"]["document"]["label"]
-
-# def analyze_review_sentiments(dealerreview):
-#     body = {"text": dealerreview, "features": {"sentiment": {"document": True}}}
-#     print(dealerreview)
-#     response = requests.post(
-#         os.environ["NLU_URL"] + "/v1/analyze?version=2019-07-12", # watson_url
-#         headers={"Content-Type": "application/json"},
-#         json=body,  # Use json parameter for automatic conversion
-#         auth=HTTPBasicAuth("apikey", os.environ["NLU_KEY"]), # watson_api_key
-#     )
-
-#     # Check if request was successful
-#     if response.status_code == 200:
-#         sentiment = response.json()["sentiment"]["document"]["label"]
-#         print("sentiment:", sentiment)
-#         return sentiment
-#     return "N/A"
