@@ -1,6 +1,6 @@
 import requests
 import json
-from .models import CarDealer
+from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
 
 
@@ -65,11 +65,53 @@ def get_dealers_from_cf(url, **kwargs):
             results.append(dealer_obj)
     return results
 
-
-# Create a get_dealer_reviews_from_cf method to get reviews by dealer id from a cloud function
 def get_dealer_by_id_from_cf(url, dealerId):
     '''return list with the dealer if found otherwise empty list'''
     return get_dealers_from_cf(url, id=dealerId)
+
+# Create a get_dealer_reviews_from_cf method to get reviews by dealer id from a cloud function
+def get_dealer_reviews_from_cf(url, dealer_id):
+    '''
+    the function request data from reviews api service using `get_request`
+    function, parse return json data into a DealerReview object list
+
+    Parameters:
+    ----------
+        url: str
+            url of the api service to fetch data from using get method.
+        **kargs:
+            parameters to use in the query string withing request url
+    
+    Returns:
+    --------
+        parsed json result stored in a list of DealerReview objects
+    '''
+    results = []
+    # Call get_request with a URL parameter
+    json_result = get_request(url, id=dealer_id)
+    if json_result:
+        # Get the row list in JSON as reviews
+        reviews = json_result
+        
+        # For each review object
+        for review in reviews:
+            # Get its content in `doc` object
+            review_doc = review
+            print("review", review_doc)
+            # Create a DealerReview object with values in `doc` object
+            review_obj = DealerReview(dealership=review_doc.get("dealership", None),
+                                   name=review_doc.get("name", None),
+                                   purchase=review_doc.get("purchase", None),
+                                   id=review_doc.get("id", None),
+                                   review=review_doc.get("review", None),
+                                   purchase_date=review_doc.get("purchase_date", None),
+                                   car_make=review_doc.get("car_make", None),
+                                   car_model=review_doc.get("car_model", None),
+                                   car_year=review_doc.get("car_year", None),
+                                   sentiment=None)
+            results.append(review_obj)
+        print("res:", results)
+    return results
 
 # Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
 # def analyze_review_sentiments(text):
