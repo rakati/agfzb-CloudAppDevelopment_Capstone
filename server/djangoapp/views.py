@@ -111,6 +111,27 @@ def get_dealer_details(request, dealer_id):
         return HttpResponse(json.dumps(context, indent=4), content_type='application/json')
 
 # Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
+def add_review(request, dealer_id):
+    '''add new review using post_request function'''
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            review = dict()
+            try:
+                review["dealership"] = dealer_id
+                review["name"] = request.POST['name']
+                review["purchase"] = request.POST['purchase']
+                review["id"] = request.POST['id']
+                review["review"] = request.POST['review']
+                review["purchase_date"] = request.POST['purchase_date']
+                review["car_make"] = request.POST['car_make']
+                review["car_model"] = request.POST['car_model']
+                review["car_year"] = request.POST['car_year']
+            except:
+                return HttpResponse("missing required data", status=400)
+            json_payload = {"review" : review}
+            resp = post_request(url, json_payload, dealerId=dealer_id)
+            print("resp:", resp)
+            return HTTPResponse({"message": "review added"})
+        else:
+            return HttpResponse("You must be logged in to add review.", status=403)
 
