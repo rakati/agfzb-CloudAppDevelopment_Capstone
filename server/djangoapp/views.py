@@ -46,12 +46,12 @@ def login_request(request):
         return render(request, 'djangoapp/index.html', context)
 
 def logout_request(request):
-    # Logout user in the request
+    '''Logout connected user amd redirect it the main page'''
     logout(request)
-    # Redirect user back to course list view
     return redirect('djangoapp:index')
 
 def registration_request(request):
+    '''Register a new user in the database'''
     context = {}
     if request.method == 'GET':
         return render(request, 'djangoapp/registration.html', context)
