@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealer_by_id_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -100,16 +100,15 @@ def get_dealerships(request):
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
 def get_dealer_details(request, dealer_id):
-    '''get dealers from dealership services api'''
+    '''get dealer reviews from reviews services api and render the reviews of a dealer'''
     context = {}
-    print("dealer id enter")
     if request.method == "GET":
-        url = "https://ouhaddounour-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
-        # Get dealers from the URL
-        dealerships = get_dealer_by_id_from_cf(url, dealer_id)
-        if len(dealerships) > 0:
-            return HttpResponse(str(dealerships[0]))
-        return HttpResponseNotFound(f"Not Found: there is no dealer with an id {dealer_id}")
+        url = "https://ouhaddounour-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
+        # Get dealer reviews from the URL
+        reviews = get_dealer_reviews_from_cf(url, dealer_id)
+        context['dealer_id'] = dealer_id
+        context['reviews']= [str(review) for review in reviews]
+        return HttpResponse(json.dumps(context, indent=4), content_type='application/json')
 
 # Create a `add_review` view to submit a review
 # def add_review(request, dealer_id):
