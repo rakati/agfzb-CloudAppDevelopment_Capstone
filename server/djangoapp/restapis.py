@@ -1,6 +1,6 @@
 import requests
 import json
-from .model import CarDealer
+from .models import CarDealer
 from requests.auth import HTTPBasicAuth
 
 
@@ -42,7 +42,7 @@ def get_dealers_from_cf(url, **kwargs):
     '''
     results = []
     # Call get_request with a URL parameter
-    json_result = get_request(url, kwargs)
+    json_result = get_request(url)
     if json_result:
         # Get the row list in JSON as dealers
         dealers = json_result
