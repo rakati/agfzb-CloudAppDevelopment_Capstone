@@ -30,7 +30,7 @@ def get_request(url, auth, **kwargs):
 
 def post_request(url, auth, json_payload, **kwargs):
     '''A function that request data from a remote api using post method'''
-    print("GET from {} with data: {}".format(url, json_payload))
+    print("Post to {} with data: {}".format(url, json_payload))
     headers={'Content-Type': 'application/json'}
     try:
         # Call get method of requests library with URL and parameters
@@ -40,9 +40,9 @@ def post_request(url, auth, json_payload, **kwargs):
         else:
             response = requests.post(url, json=json_payload, headers=headers,
                                      params=kwargs)
-    except:
+    except Exception as e:
         # If any error occurs
-        print("Network exception occurred")
+        print("Network exception occurred", e)
         return None
     status_code = response.status_code
     print("With status {} ".format(status_code))
@@ -87,7 +87,6 @@ def get_dealers_from_cf(url, **kwargs):
         for dealer in dealers:
             # Get its content in `doc` object
             dealer_doc = dealer
-            print("DEaler",dealer_doc)
             # Create a CarDealer object with values in `doc` object
             dealer_obj = CarDealer(address=dealer_doc["address"],
                                    city=dealer_doc["city"],
@@ -138,7 +137,6 @@ def get_dealer_reviews_from_cf(url, dealer_id):
         for review in reviews:
             # Get its content in `doc` object
             review_doc = review
-            print("review", review_doc)
             # Create a DealerReview object with values in `doc` object
             review_obj = DealerReview(dealership=review_doc.get("dealership", None),
                                    name=review_doc.get("name", None),
@@ -152,13 +150,11 @@ def get_dealer_reviews_from_cf(url, dealer_id):
                                    sentiment=None)
             review_obj.sentiment=analyze_review_sentiments(review_obj.review)
             results.append(review_obj)
-        print("res:", results)
     return results
 
 # Create an `analyze_review_sentiments` method to call Watson NLU and analyze text
 def analyze_review_sentiments(dealerreview):
     '''get sentiments of a dealer review'''
-    print("text to analyze:", dealerreview)
     api_key = os.environ["NLU_KEY"]
     api_url = os.environ["NLU_URL"] + "/v1/analyze?version=2019-07-12"
     data = {
