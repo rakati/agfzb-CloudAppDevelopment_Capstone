@@ -3,7 +3,7 @@
 {% if user.is_authenticated %}
 <div class='row'>
     <div class="col d-flex justify-content-end">
-        <button type="button" class="btn btn-primary">Add review</button>
+        <a href="{% url 'djangoapp:add_review' dealer_id=dealer_id %}" class="btn btn-primary" role="button">Add review</a>
     </div>
 </div>
 {% endif %}
