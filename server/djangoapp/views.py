@@ -84,7 +84,6 @@ def registration_request(request):
     else:
         return redirect('djangoapp:signup')
 
-# Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
     '''get dealers from dealership services api'''
     context = {}
@@ -92,25 +91,19 @@ def get_dealerships(request):
         url = "https://ouhaddounour-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
-        # Concat all dealer's short name
-        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
-        # Return a list of dealer short name
-        return HttpResponse(dealer_names)
+        # add dealership to the context
+        context['dealerships'] = dealerships
+        return render(request, 'djangoapp/index.html', context)
 
-
-# Create a `get_dealer_details` view to render the reviews of a dealer
 def get_dealer_details(request, dealer_id):
     '''get dealer reviews from reviews services api and render the reviews of a dealer'''
     context = {}
     if request.method == "GET":
         url = "https://ouhaddounour-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
         # Get dealer reviews from the URL
-        reviews = get_dealer_reviews_from_cf(url, dealer_id)
-        context['dealer_id'] = dealer_id
-        context['reviews']= [{'review': str(review), "sentiment": review.sentiment} for review in reviews]
-        return HttpResponse(json.dumps(context, indent=4), content_type='application/json')
+        context['reviews']= get_dealer_reviews_from_cf(url, dealer_id)
+        return render(request, 'djangoapp/dealer_details.html', context)
 
-# Create a `add_review` view to submit a review
 def add_review(request, dealer_id):
     '''add new review using post_request function'''
     if request.method == 'POST':
