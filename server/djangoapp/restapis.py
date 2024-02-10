@@ -7,7 +7,7 @@ import os
 
 def get_request(url, auth, **kwargs):
     '''A function that fetch data from a remote api and return json results'''
-    print("Post to {} ".format(url))
+    print("get from {} ".format(url))
     headers={'Content-Type': 'application/json'}
     try:
         # Call get method of requests library with URL and parameters
