@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Dealership Review</title>
+    {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -16,7 +17,7 @@
     <body>
     <!--Add a nav bar here -->
     <nav class="navbar navbar-light bg-light">
-        <div class="container-fluid">
+        <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand" href="{% url 'djangoapp:index' %}"><b>Best Cars</b></a>
                 <a class="navbar-brand" href="{% url 'djangoapp:about' %}">About</a>
@@ -49,6 +50,9 @@
     <!-- content that can be overridden -->
     {% endblock %}
     </div>
+    {% block scripts %}
+    <!-- javascript logic here -->
+    {% endblock %}
     </body>
 
 </html>
