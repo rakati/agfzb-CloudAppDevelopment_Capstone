@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealer_by_id_from_cf
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -13,7 +13,9 @@ import json
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-
+# urls
+dealerships_url = "https://ouhaddounour-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+reviews_url = "https://ouhaddounour-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
 # Create your views here.
 def about(request):
     '''render about page'''
@@ -88,9 +90,8 @@ def get_dealerships(request):
     '''get dealers from dealership services api'''
     context = {}
     if request.method == "GET":
-        url = "https://ouhaddounour-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
         # Get dealers from the URL
-        dealerships = get_dealers_from_cf(url)
+        dealerships = get_dealers_from_cf(dealerships_url)
         # add dealership to the context
         context['dealerships'] = dealerships
         return render(request, 'djangoapp/index.html', context)
@@ -99,13 +100,20 @@ def get_dealer_details(request, dealer_id):
     '''get dealer reviews from reviews services api and render the reviews of a dealer'''
     context = {}
     if request.method == "GET":
-        url = "https://ouhaddounour-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
         # Get dealer reviews from the URL
-        context['reviews']= get_dealer_reviews_from_cf(url, dealer_id)
+        context['reviews']= get_dealer_reviews_from_cf(reviews_url, dealer_id)
+        context['dealer_id'] = dealer_id
         return render(request, 'djangoapp/dealer_details.html', context)
 
 def add_review(request, dealer_id):
     '''add new review using post_request function'''
+    if request.method == 'GET':
+        context = {}
+        dealership = get_dealer_by_id_from_cf(dealerships_url, dealer_id)
+        context["dealer_name"] = dealership.short_name
+        context["dealer_id"] = dealership.id
+        context["cars"]: CarModel.objects.all()
+        return render(request, 'djangoapp/add_review.html', context)
     if request.method == 'POST':
         if request.user.is_authenticated:
             review = dict()
@@ -123,7 +131,6 @@ def add_review(request, dealer_id):
                 return HttpResponse("missing required data", status=400)
             json_payload = {"review" : review}
             resp = post_request(url, json_payload, dealerId=dealer_id)
-            print("resp:", resp)
             return HTTPResponse({"message": "review added"})
         else:
             return HttpResponse("You must be logged in to add review.", status=403)
