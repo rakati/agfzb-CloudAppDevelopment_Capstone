@@ -27,10 +27,15 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="purchasedate" class="form-label">Select Purchase Date</label>
-                        <input type="text" class="form-control" name="purchasedate" id='purchasedate'>
+                        <label for="purchase_date" class="form-label">Select Purchase Date</label>
+                        <input type="text" class="form-control" name="purchase_date" placeholder='mm/dd/yyyy'>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                    {% endif %}
                 </form>
             </div>
         </div>
