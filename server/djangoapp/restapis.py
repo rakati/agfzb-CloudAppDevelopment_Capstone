@@ -157,7 +157,7 @@ def analyze_review_sentiments(dealerreview):
     api_key = os.environ["NLU_KEY"]
     api_url = os.environ["NLU_URL"] + "/v1/analyze?version=2019-07-12"
     data = {
-        'text': dealerreview,
+        'text': dealerreview + ' ' + dealerreview,
         'features': {
             'sentiment': {"document": True}
         }
