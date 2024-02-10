@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-# from .models import related models
+from .models import CarModel
 from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealer_by_id_from_cf
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -112,7 +112,7 @@ def add_review(request, dealer_id):
         dealership = get_dealer_by_id_from_cf(dealerships_url, dealer_id)
         context["dealer_name"] = dealership.short_name
         context["dealer_id"] = dealership.id
-        context["cars"]: CarModel.objects.all()
+        context["cars"] =  CarModel.objects.all()
         return render(request, 'djangoapp/add_review.html', context)
     if request.method == 'POST':
         if request.user.is_authenticated:
