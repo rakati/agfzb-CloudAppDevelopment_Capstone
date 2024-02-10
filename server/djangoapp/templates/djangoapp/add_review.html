@@ -4,36 +4,33 @@
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card">
-            <div class="card-header">Review {{dealer_name}} Car Dealership</div>
+            <div class="card-header"><b>Review {{dealer_name}} Car Dealership</b></div>
             <div class="card-body">
                 <form name="my-form" action="{% url 'djangoapp:add_review' dealer_id%}" method="post">
                     {% csrf_token %}
-                    <label for="review" class="col-md-4 col-form-label text-md-right">Enter the review content</label>
-                    <div class="col-md-8">
+                    <div class="mb-3">
+                        <label for="review" class="form-label">Enter the review content</label>
                         <textarea class="form-control" id="review" name="review" rows="2" required></textarea>
                     </div>
-                    <input type="checkbox" class="form-control" name="purchase" id='purchase' required>
-                    <label for="firstname" class="col-md-4 col-form-label text-md-right">
-                        Has purchased the car from {{dealer_name}} Car Dealership?
-                    </label>
-                    <label for="lastname" class="col-md-4 col-form-label text-md-right">Select your car (model-make-year)</label>
-                    <div class="col-md-6">
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="purchase" id='purchase' required>
+                        <label for="purchase" class="form-check-label">
+                            Has purchased the car from <b>{{dealer_name}}</b> Car Dealership?
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="car" class="form-label">Select your car (model-make-year)</label>
                         <select name="car" id="car" class="form-select" required>
                             {% for car in cars %}
-                                <option selected value={{car.id}}>{{car.name}}-{{car.make.name}}-{{ car.year|date:"Y" }}</option>
+                                <option selected value={{car.id}}>{{car.model_name}}-{{car.car_make.name}}-{{ car.model_year|date:"Y" }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <label for="password" class="col-md-4 col-form-label text-md-right">Select Purchase Date</label>
-                    <div class="col-md-6">
-                        <input type="text" class="date-own form-control" name="purchasedate" id='purchasedate'>
+                    <div class="mb-3">
+                        <label for="purchasedate" class="form-label">Select Purchase Date</label>
+                        <input type="text" class="form-control" name="purchasedate" id='purchasedate'>
                     </div>
-
-                    <div class="col-md-6 offset-md-4">
-                        <button type="submit" class="btn btn-primary">
-                        Submit
-                        </button>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
         </div>
@@ -45,20 +42,6 @@
 <script>
     $('.date-own').datepicker({
         format: 'mm/dd/yyyy'
-    });
-
-    const is_purchased = document.getElementById('purchase');
-
-    const purchasedate = document.getElementById('purchasedate');
-
-    checkbox.addEventListener('click', function handleClick() {
-    if (is_purchased.checked) {
-        purchasedate.style.visibility = 'visible';
-        purchasedate.attributes["required"] = "required"
-    } else {
-        purchasedate.style.visibility = 'hidden';
-        purchasedate.attributes["required"] = ""
-    }
     });
 </script>
 {% endblock %}
