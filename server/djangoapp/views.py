@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import CarModel
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealer_by_id_from_cf
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealer_by_id_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 # urls
 dealerships_url = "https://ouhaddounour-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
 reviews_url = "https://ouhaddounour-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
+post_review_url = "https://ouhaddounour-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
 # Create your views here.
 def about(request):
     '''render about page'''
@@ -107,8 +108,8 @@ def get_dealer_details(request, dealer_id):
 
 def add_review(request, dealer_id):
     '''add new review using post_request function'''
+    context = {}
     if request.method == 'GET':
-        context = {}
         dealership = get_dealer_by_id_from_cf(dealerships_url, dealer_id)
         context["dealer_name"] = dealership.short_name
         context["dealer_id"] = dealership.id
@@ -116,22 +117,33 @@ def add_review(request, dealer_id):
         return render(request, 'djangoapp/add_review.html', context)
     if request.method == 'POST':
         if request.user.is_authenticated:
-            review = dict()
+            review = {}
             try:
                 review["dealership"] = dealer_id
-                review["name"] = request.POST['name']
-                review["purchase"] = request.POST['purchase']
-                review["id"] = request.POST['id']
-                review["review"] = request.POST['review']
-                review["purchase_date"] = request.POST['purchase_date']
-                review["car_make"] = request.POST['car_make']
-                review["car_model"] = request.POST['car_model']
-                review["car_year"] = request.POST['car_year']
+                review["name"] = request.user.username
+                review["purchase"] = request.POST.get('purchase', False)
+                review["id"] = request.user.id
+                review["review"] = request.POST.get('review')
+                if review["purchase"]:
+                    car_id = request.POST.get('car')
+                    car = get_object_or_404(CarModel, pk=car_id)
+                    review["purchase_date"] = request.POST.get('purchase_date')
+                    review["car_make"] = car.car_make.name
+                    review["car_model"] = car.model_name
+                    review["car_year"] = car.model_year.strftime("%Y")
             except:
-                return HttpResponse("missing required data", status=400)
+                context["error"] = "input error"
+                return render(request, 'djangoapp/add_review.html', context)
             json_payload = {"review" : review}
-            resp = post_request(url, json_payload, dealerId=dealer_id)
-            return HTTPResponse({"message": "review added"})
+            try:
+                json.dumps(json_payload)
+            except (TypeError, ValueError) as e:
+                print(f"Error serializing object to JSON: {e}")
+            resp = post_request(post_review_url, None, json_payload=json_payload)
+            if resp is None:
+                return HttpResponse("An internal error occured.", status=500)
+            else:
+                return redirect('djangoapp:dealer/' + str(dealer_id))
         else:
             return HttpResponse("You must be logged in to add review.", status=403)
 
